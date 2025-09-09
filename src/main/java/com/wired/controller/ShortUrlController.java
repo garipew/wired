@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
 import com.wired.service.UrlShortener;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @RestController
 public class ShortUrlController{
@@ -25,7 +26,7 @@ public class ShortUrlController{
 	public ResponseEntity<String> redirect(@PathVariable String shortUrl){
 		Optional<ShortUrl> entry = repo.findByShortenedUrl(shortUrl);
 		HttpHeaders headers = new HttpHeaders();
-		if(entry.isPresent()){
+		if(entry.isPresent() && entry.get().getExpirationTime().isAfter(LocalDateTime.now())){
 			headers.add("Location", entry.get().getOriginalUrl());
 			return ResponseEntity.status(HttpStatus.FOUND).headers(headers).body("");
 		}
@@ -37,7 +38,7 @@ public class ShortUrlController{
 		shortRequest.setExpirationTime(shortRequest.getExpirationTime().now().plusHours(5));
 		ShortUrl newShortUrl = new ShortUrl();
 		newShortUrl.setOriginalUrl(shortRequest.getUrl());
-		newShortUrl.setShortenedUrl(UrlShortener.generateShortUrl(shortRequest.getUrl()));
+		newShortUrl.setShortenedUrl(UrlShortener.generateShortUrl(shortRequest.getUrl(), repo));
 		newShortUrl.setExpirationTime(shortRequest.getExpirationTime());
 		shortRequest.setShortUrl(newShortUrl.getShortenedUrl());
 		repo.save(newShortUrl);

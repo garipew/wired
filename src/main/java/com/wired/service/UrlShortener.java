@@ -1,5 +1,9 @@
 package com.wired.service;
+import com.wired.repository.ShortUrlRepository;
+import com.wired.entity.ShortUrl;
 import java.util.Base64;
+import java.util.Optional;
+import java.time.LocalDateTime;
 
 public class UrlShortener {
 	public static String getDomain(String url){
@@ -19,11 +23,14 @@ public class UrlShortener {
 		return url.substring(url.indexOf(domain) + domain.length() + ".com/".length());
 	}
 
-	public static String generateShortUrl(String originalUrl){
+	public static String regenShortUrl(String shortUrl){
+		String regenerated = Base64.getEncoder().encodeToString(shortUrl.getBytes()); 
+		return regenerated.substring(regenerated.length()-shortUrl.length(), regenerated.length()-1);
+	}
+
+	public static String generateShortUrl(String originalUrl, ShortUrlRepository repo){
 		String domain = Base64.getEncoder().encodeToString(getDomain(originalUrl).getBytes());
 		String route = Base64.getEncoder().encodeToString(getRoute(originalUrl).getBytes());
-		System.out.println("Domain: " + getDomain(originalUrl));
-		System.out.println("Route: " + getRoute(originalUrl));
 		if(domain.length() > 5){
 			domain = domain.substring(0, 4);
 		}
@@ -31,6 +38,12 @@ public class UrlShortener {
 			route = route.substring(0, 4);
 		}
 		String shortUrl = route + domain;
+		Optional<ShortUrl> entry;
+		while((entry = repo.findByShortenedUrl(shortUrl)).isPresent()){
+			if(entry.get().getExpirationTime().isAfter(LocalDateTime.now())){
+				shortUrl = regenShortUrl(shortUrl);
+			}
+		}
 		return shortUrl;
 	}
 }
