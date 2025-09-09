@@ -5,7 +5,7 @@ public class UrlShortener {
 	public static String generateShortUrl(String originalUrl){
 		String shortUrl = Base64.getEncoder().encodeToString(originalUrl.getBytes());
 		if(shortUrl.length() > 10){
-			shortUrl = shortUrl.substring(0, 9);
+			shortUrl = shortUrl.substring(shortUrl.length()-11, shortUrl.length()-1);
 		}
 		return shortUrl;
 	}
