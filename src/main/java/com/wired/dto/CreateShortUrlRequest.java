@@ -1,7 +1,7 @@
 package com.wired.dto;
 import java.time.LocalDateTime;
 
-public class CreateUrlShortenerRequest {
+public class CreateShortUrlRequest {
 	private String url;
 	private LocalDateTime expirationTime;
 	public String getUrl(){
