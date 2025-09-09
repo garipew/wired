@@ -8,9 +8,9 @@ Run wired locally with gradle:
 ```
 gradle bootRun
 ```
+This will start the app in "http://localhost:8080/".
 
-This will start the app in "http://localhost:8080/". Send a POST-request to this route with the url in the body,
-like in the example
+Send a POST-request to this route with the url in the body, like in the example:
 ```
 # POST-request to http://localhost:8080/
 {
