@@ -11,6 +11,9 @@ public class UrlShortener {
 		int endIndex = url.indexOf(".com");
 		if(url.startsWith("http")){
 			startIndex = url.indexOf("/", url.indexOf("/")+1)+1;
+			if(endIndex < 0){
+				endIndex = url.indexOf("/", startIndex);
+			}
 		}
 		if(url.contains("www.") && url.indexOf("www.") < endIndex){
 			startIndex = url.indexOf(".")+1;
